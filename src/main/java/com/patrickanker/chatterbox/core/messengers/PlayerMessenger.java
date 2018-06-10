@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerMessenger implements Messenger {
@@ -35,11 +36,11 @@ public class PlayerMessenger implements Messenger {
 
     }
 
-    public OfflinePlayer getOfflinePlayer() {
-        return Bukkit.getOfflinePlayer(uuid);
+    public Optional<OfflinePlayer> getOfflinePlayer() {
+        return Optional.ofNullable(Bukkit.getOfflinePlayer(uuid));
     }
 
-    public Player getPlayer() {
-        return Bukkit.getOfflinePlayer(uuid).getPlayer();
+    public Optional<Player> getPlayer() {
+        return Optional.ofNullable(Bukkit.getOfflinePlayer(uuid).getPlayer());
     }
 }
