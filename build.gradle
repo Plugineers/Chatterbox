@@ -1,0 +1,16 @@
+apply plugin: "java"
+
+repositories {
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+
+    maven {
+        url "http://nexus.hc.to/content/repositories/pub_releases"
+    }
+}
+
+dependencies {
+    implementation "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT"
+    implementation "net.milkbowl.vault:Vault:1.6.6"
+}
