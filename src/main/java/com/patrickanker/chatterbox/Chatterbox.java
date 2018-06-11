@@ -1,14 +1,18 @@
 package com.patrickanker.chatterbox;
 
+import com.patrickanker.chatterbox.core.ChannelManager;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.util.logging.Level;
 
 public final class Chatterbox {
 
+    private static final String LOGGING_ID = "Chatterbox";
     private static Chatterbox instance;
 
-    private static final String LOGGING_ID = "Chatterbox";
+    private PermissionsManager permissionsManager;
+    private ChannelManager channelManager;
 
     public static Chatterbox chatterbox() {
         if (instance != null) {
@@ -18,6 +22,22 @@ public final class Chatterbox {
 
             return instance;
         }
+    }
+
+    public static void start(Plugin plugin) {
+        // Loading logic here
+    }
+
+    public static void stop() {
+        // Stopping logic here
+    }
+
+    public static PermissionsManager permissionsManager() {
+        return chatterbox().permissionsManager;
+    }
+
+    public static ChannelManager channelManager() {
+        return chatterbox().channelManager;
     }
 
     public static void logInfo(String message) {

@@ -2,21 +2,20 @@ package com.patrickanker.chatterbox.core;
 
 import com.patrickanker.chatterbox.api.Channel;
 import com.patrickanker.chatterbox.api.ChannelType;
+import com.patrickanker.chatterbox.api.Messenger;
 import com.patrickanker.chatterbox.api.events.*;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public final class ChannelManager {
 
     private final LinkedList<Channel> registeredChannels = new LinkedList<>();
     private final ArrayList<Class> registeredTypes       = new ArrayList<>();
+    private final ArrayList<Messenger> knownMessengers   = new ArrayList<>();
 
     private static ChannelManager singleton;
 
@@ -77,6 +76,29 @@ public final class ChannelManager {
 
     private boolean addChannel(Channel ch) {
 
+    }
+
+    public boolean hasMessenger(String uuid) {
+        return knownMessengers.stream()
+                .anyMatch(msgr -> msgr.getID().equals(uuid));
+    }
+
+    public Optional<Messenger> getMessenger(String uuid) {
+        return knownMessengers.stream()
+                .filter(msgr -> msgr.getID().equals(uuid))
+                .findFirst();
+    }
+
+    public void addMessenger(Messenger msgr) {
+        if (!hasMessenger(msgr.getID())) {
+            knownMessengers.add(msgr);
+        }
+    }
+
+    public void removeMessenger(String uuid) {
+        if (hasMessenger(uuid)) {
+            knownMessengers.remove(getMessenger(uuid).get());
+        }
     }
 
     // Event handling
