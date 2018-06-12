@@ -6,20 +6,16 @@ import java.util.function.Supplier;
 
 import com.patrickanker.chatterbox.Chatterbox;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 
-public final class DynamicCommandManager {
+public final class DynamicCommandRegistry {
     private final String[] helpArgs = {"help", "h", "?"};
     private final LinkedList<DynamicPluginCommand> registeredCommands = new LinkedList<>();
-//    protected final Map<String, Method> aliases   = new HashMap<>();
-//    protected final Map<Method, Object> instances = new HashMap<>();
 
     private final String owningPlugin;
 
-    public DynamicCommandManager(String pl) {
+    public DynamicCommandRegistry(String pl) {
         this.owningPlugin = pl;
     }
 
@@ -32,7 +28,7 @@ public final class DynamicCommandManager {
                 .anyMatch(cmd -> cmd.getName().equals(dynamicCommand.aliases()[0]));
     }
 
-    public <T extends DynamicPluginCommand> DynamicCommandManager registerCommand(Supplier<T> cmd) {
+    public <T extends DynamicPluginCommand> DynamicCommandRegistry registerCommand(Supplier<T> cmd) {
         if (cmd.get().getClass().isAnnotationPresent(DynamicCommand.class)) {
             T t = cmd.get();
             DynamicCommand reg = t.getClass().getAnnotation(DynamicCommand.class);
@@ -76,6 +72,7 @@ public final class DynamicCommandManager {
                 } else {
                     Chatterbox.logInfo("Successfully registered command \"" + t.getName() + "\"");
                     commandMap.register(t.getLabel(), t);
+                    registeredCommands.add(t);
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

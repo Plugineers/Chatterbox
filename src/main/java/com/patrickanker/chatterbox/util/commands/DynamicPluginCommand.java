@@ -5,10 +5,7 @@ import com.patrickanker.chatterbox.api.Messenger;
 import com.patrickanker.chatterbox.core.messengers.PlayerMessenger;
 import com.sun.istack.internal.NotNull;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -17,6 +14,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public abstract class DynamicPluginCommand extends Command implements PluginIdentifiableCommand {
+    private static final String[] HELP_ARGS = {"help", "h", "?"};
 
     private String owningPlugin;
 
@@ -35,19 +33,27 @@ public abstract class DynamicPluginCommand extends Command implements PluginIden
         argbounds = minmax;
     }
 
-    public int[] getArgumentBounds() {
-        return argbounds;
+    protected boolean argsInBounds(String[] args) {
+        if (getMinimumNumberOfArguments() > 0 && args.length < getMinimumNumberOfArguments()) {
+            return false;
+        }
+
+        if (getMaximumNumberOfArguments() > 0 && args.length > getMaximumNumberOfArguments()) {
+            return false;
+        }
+
+        return true;
     }
 
-    public int getMinimumNumberOfArguments() {
+    protected int getMinimumNumberOfArguments() {
         return argbounds[0];
     }
 
-    public int getMaximumNumberOfArguments() {
+    protected int getMaximumNumberOfArguments() {
         return argbounds[1];
     }
 
-    public boolean isPlayerOnly() {
+    protected boolean isPlayerOnly() {
         return playerOnly;
     }
 
@@ -55,12 +61,16 @@ public abstract class DynamicPluginCommand extends Command implements PluginIden
         this.playerOnly = playerOnly;
     }
 
+    abstract boolean doCommand(DynamicCommandPayload payload);
+
     @Override
     public Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin(owningPlugin);
     }
 
-    public boolean checkPermissions(CommandSender target, Optional<DynamicSubcommand> subcommand) {
+    private boolean checkPermissions(CommandSender target, String[] args) {
+        Optional<DynamicSubcommand> subcommand = subcommandFromArgs(args);
+
         if (subcommand.isPresent()) {
             return testPermissionString(target,getPermission() + "." + subcommand.get().permission());
         } else {
@@ -69,13 +79,37 @@ public abstract class DynamicPluginCommand extends Command implements PluginIden
     }
 
     @Override
-    public boolean testPermissionSilent(CommandSender target) {
-        return testPermissionString(target, getPermission());
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        // Check to see if help was requested
+        if (Arrays.asList(HELP_ARGS).contains(args[0])) {
+            sendHelp(sender);
+            return true;
+        }
+
+        if (checkPermissions(sender, args)) {
+
+            if (!argsInBounds(args)) {
+                sender.sendMessage("§cNumber of arguments for this command was invalid");
+                sendHelp(sender);
+                return true;
+            }
+
+            if (isPlayerOnly() && !(sender instanceof Player)) {
+                sender.sendMessage("§cThis command is intended to be sent by Players only");
+                return true;
+            }
+
+            return doCommand(new DynamicCommandPayload(sender, commandLabel, args));
+
+        } else {
+            sender.sendMessage("§cYou do not have permission to access this command");
+            return true;
+        }
     }
 
     private boolean testPermissionString(CommandSender target, String permission) {
-        // Firstly, determine if the sender is the Console
-        if (target instanceof ConsoleCommandSender) {
+        // Firstly, determine if the sender is the Console or a CommandBlock
+        if (target instanceof ConsoleCommandSender || target instanceof BlockCommandSender) {
             return true;
         } else {
             if (permission.equals("")) {
@@ -101,11 +135,22 @@ public abstract class DynamicPluginCommand extends Command implements PluginIden
         }
     }
 
-    public static <T extends DynamicPluginCommand> Optional<DynamicSubcommand> subcommandFromArgs(T t, String[] args) {
-        return Arrays.asList(t.getClass().getAnnotationsByType(DynamicSubcommand.class))
-                .stream()
-                .filter(sub -> Arrays.asList(sub.aliases()).stream()
-                        .anyMatch(al -> al.equals(args[1])))
+    private Optional<DynamicSubcommand> subcommandFromArgs(String[] args) {
+        if (args.length == 0) {
+            return Optional.empty();
+        }
+
+        return Arrays.stream(this.getClass().getAnnotationsByType(DynamicSubcommand.class))
+                .filter(sub -> Arrays.stream(sub.aliases())
+                        .anyMatch(al -> al.equals(args[0])))
                 .findFirst();
+    }
+
+    private void sendHelp(CommandSender cs) {
+        String[] help = this.getUsage().split("\\n");
+
+        for (String str : help) {
+            cs.sendMessage(str);
+        }
     }
 }
