@@ -5,12 +5,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PlayerMessenger implements Messenger {
+public class PlayerMessenger implements Messenger, Serializable {
 
-    private final UUID uuid;
+    private transient final UUID uuid;
 
     public PlayerMessenger(UUID id) {
         uuid = id;

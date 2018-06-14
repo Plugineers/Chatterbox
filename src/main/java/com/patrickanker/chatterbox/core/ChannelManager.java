@@ -29,22 +29,12 @@ public final class ChannelManager {
     }
 
     public boolean hasChannel(Channel ch) {
-        for (Channel channel : registeredChannels) {
-            if (ch.getID().equals(channel.getID())) {
-                return true;
-            }
-        }
-
-        return false;
+        return registeredChannels.stream()
+                .anyMatch(channel -> channel.getID().equals(ch.getID()));
     }
 
-    public Channel makeChannel(Class cls, Map<String, Object> options) throws Exception {
-        // First check to make sure that the class is valid
-        if (!cls.isAssignableFrom(Channel.class)) {
-            throw new Exception("Class must implement Channel");
-        }
-
-        // Second, check to verify that the appropriate ChannelType is set
+    public Channel makeChannel(Class<? extends Channel> cls, Map<String, Object> options) throws Exception { // TODO: Have better exception throws
+        // First, check to verify that the appropriate ChannelType is set
         if (!cls.isAnnotationPresent(ChannelType.class)) {
             throw new Exception("Channel Type must be declared on Channel");
         }
@@ -53,6 +43,8 @@ public final class ChannelManager {
             // Handle class as serialized and load from storage file, if it exists
             // Otherwise, use options to write initial configuration of channel
             // TODO
+
+
         } else {
             // No data stored for channel
             return (Channel) cls.newInstance();
@@ -60,7 +52,7 @@ public final class ChannelManager {
         }
     }
 
-    private String generateID() {
+    public static String generateID() {
         final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         StringBuilder idBuilder = new StringBuilder();

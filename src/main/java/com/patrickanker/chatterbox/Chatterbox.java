@@ -11,6 +11,7 @@ public final class Chatterbox {
     private static final String LOGGING_ID = "Chatterbox";
     private static Chatterbox instance;
 
+    private String executingPlugin;
     private PermissionsManager permissionsManager;
     private ChannelManager channelManager;
 
@@ -26,10 +27,17 @@ public final class Chatterbox {
 
     public static void start(Plugin plugin) {
         // Loading logic here
+        chatterbox(); // Create the instance
+
+        instance.executingPlugin = plugin.getName();
     }
 
     public static void stop() {
         // Stopping logic here
+    }
+
+    public static Plugin executingPlugin() {
+        return Bukkit.getServer().getPluginManager().getPlugin(chatterbox().executingPlugin);
     }
 
     public static PermissionsManager permissionsManager() {

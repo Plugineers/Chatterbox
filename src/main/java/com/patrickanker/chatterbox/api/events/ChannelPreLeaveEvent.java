@@ -15,6 +15,7 @@ public final class ChannelPreLeaveEvent extends Event implements Cancellable {
     private final Messenger messenger;
 
     public ChannelPreLeaveEvent(Channel ch, Messenger msgr) {
+        super(true);
         channel   = ch;
         messenger = msgr;
     }

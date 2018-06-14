@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ChannelType {
 
-    String value() default "chat";
+    String value();
 
 }
