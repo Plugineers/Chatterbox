@@ -1,19 +1,27 @@
 package chatterbox
 
 import chatterbox.api.Messenger
+import chatterbox.util.commands.DynamicCommandRegistry
 import org.bukkit.Bukkit
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.Plugin
 import java.util.logging.Level
 
-val LOGGING_ID = "Chatterbox";
+const val LOGGING_ID: String = "Chatterbox"
 
 object Chatterbox {
     private val knownMessengers: MutableSet<Messenger> = mutableSetOf()
+    private val commandRegistry by lazy {
+        DynamicCommandRegistry(executingPlugin)
+    }
 
     private var executingPlugin: String = ""
 
     fun start(plugin: Plugin) {
         executingPlugin = plugin.name
+
+        // Configuration loading here
+
+        // Command registration here
     }
 
     fun hasMessenger(id: String): Boolean = knownMessengers.firstOrNull { it.id == id } != null

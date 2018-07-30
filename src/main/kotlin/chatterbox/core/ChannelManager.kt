@@ -11,7 +11,7 @@ private fun generateID(len: Int = 15): String {
     val rnd         = Random()
 
     while (idBuilder.length < len) {
-        idBuilder.append(sampleSpace[floor(rnd.nextFloat() * sampleSpace.length) as Int])
+        idBuilder.append(sampleSpace[floor(rnd.nextFloat() * sampleSpace.length).toInt()])
     }
 
     return idBuilder.toString()

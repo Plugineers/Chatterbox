@@ -8,20 +8,12 @@ import org.bukkit.command.*
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 
-private val HELP_ARGS: Array<String> = arrayOf("help", "h", "?")
-
 data class DynamicCommandPayload(val sender: CommandSender, val commandLabel: String, val arguments: List<String>)
 
-abstract class DynamicPluginCommand : Command, PluginIdentifiableCommand {
-    private val commandName: String
-
-    constructor(name: String) : super("", "", "", arrayListOf<String>()) {
-        commandName = name
-    }
-
-    protected var owningPlugin = ""
-    protected var argbounds    = intArrayOf(-1, -1)
-    protected var playerOnly   = false
+abstract class DynamicPluginCommand : Command("", "", "", arrayListOf<String>()), PluginIdentifiableCommand {
+    internal var owningPlugin = ""
+    internal var argbounds    = intArrayOf(-1, -1)
+    internal var playerOnly   = false
 
     fun argsInBounds(args: List<String>): Boolean {
         return if (argbounds[0] > 0 && args.size < argbounds[0]) {

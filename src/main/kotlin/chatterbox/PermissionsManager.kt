@@ -6,7 +6,7 @@ import chatterbox.core.messengers.PlayerMessenger
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 
-private var ALL_WORLDS = "*";
+private var ALL_WORLDS = "*"
 
 object PermissionsManager {
 
