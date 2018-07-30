@@ -1,18 +1,29 @@
+buildscript {
+    ext.kotlin_version = '1.2.51'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-reflect"
+    }
+}
+
 plugins {
     id 'java'
 }
 
 group 'com.patrickanker.chatterbox'
 version '1.0-SNAPSHOT'
-apply plugin: "java"
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-
     maven {
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
     }
-
     maven {
         url "http://nexus.hc.to/content/repositories/pub_releases"
     }
@@ -22,7 +33,17 @@ repositories {
 }
 
 dependencies {
-    implementation "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT"
-    implementation "net.milkbowl.vault:Vault:1.6.6"
-//    compile "com.google.guava:guava:25.1-jre"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+    compile "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT"
+    compile "net.milkbowl.vault:Vault:1.6.6"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+} 
