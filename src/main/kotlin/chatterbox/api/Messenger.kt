@@ -4,7 +4,7 @@ interface Messenger {
 
     val id: String
 
-    fun getFocus(): String
+    var focus: String
 
     fun assignFocus(channelID: String)
 }

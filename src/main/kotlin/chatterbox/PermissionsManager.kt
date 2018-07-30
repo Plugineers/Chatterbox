@@ -8,33 +8,33 @@ import org.bukkit.Bukkit
 
 private var ALL_WORLDS = "*";
 
-class PermissionsManager {
+object PermissionsManager {
+
+    private var servicesChecked = false
 
     private var permissionHandler: Permission? = null
         get() {
             if (!servicesChecked) {
-                this.permissionHandler = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java).provider
-                this.servicesChecked   = true
+                field = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java).provider
+                servicesChecked = true
             }
 
-            return this.permissionHandler
+            return field
         }
 
     init {
         println(if (permissionHandler != null) "Captured Vault permissions" else "Defaulting to Bukkit \"Superperms\"")
     }
 
-    private var servicesChecked = false
-
     fun hasPermission(messenger: Messenger, permission: String, worldName: String = ALL_WORLDS): Boolean {
         if (messenger is ConsoleMessenger) {
             return true
         }
 
-        var pMsgr: PlayerMessenger = messenger as PlayerMessenger
+        val pMsgr: PlayerMessenger = messenger as PlayerMessenger
 
         return if (permissionHandler != null) {
-            var perm = permissionHandler as Permission
+            val perm = permissionHandler as Permission
 
             if (worldName == ALL_WORLDS) {
                 return if (pMsgr.onlinePlayer != null) {
@@ -54,17 +54,13 @@ class PermissionsManager {
                 }
             }
         } else {
-            return if (pMsgr.onlinePlayer != null) {
-                pMsgr.onlinePlayer!!.hasPermission(permission)
-            } else {
-                false
-            }
+            pMsgr.onlinePlayer?.hasPermission(permission) ?: false
         }
     }
 
     fun inGroup(playerMessenger: PlayerMessenger, groupName: String): Boolean {
         return if (permissionHandler != null) {
-            var perm = permissionHandler as Permission
+            val perm = permissionHandler as Permission
 
             return if (playerMessenger.onlinePlayer != null) {
                 perm.playerInGroup(playerMessenger.onlinePlayer, groupName)

@@ -6,13 +6,10 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import java.util.*
 
-class PlayerMessenger constructor(uid: UUID) : Messenger {
-
-    private val uuid: UUID = uid
-
-    override fun getFocus(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class PlayerMessenger constructor(private val uuid: UUID) : Messenger {
+    override var focus: String
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        set(value) {}
 
     override fun assignFocus(channelID: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
